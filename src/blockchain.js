@@ -65,6 +65,13 @@ class Blockchain {
   _addBlock(block) {
     let self = this
     return new Promise(async (resolve, reject) => {
+      // first validate the chain
+      const errors = await self.validateChain()
+
+      if (errors.length > 0) {
+        reject(new Error("Chain is invalid, can't add blocks"))
+      }
+
       try {
         block.height = self.chain.length
         block.time = new Date().getTime().toString().slice(0, -3)
@@ -148,7 +155,7 @@ class Blockchain {
   getBlockByHash(hash) {
     let self = this
     return new Promise((resolve, reject) => {
-      const block = self.chain.filter((b) => b.hash === hash)
+      const block = self.chain.find((b) => b.hash === hash)
       if (block) {
         resolve(block)
       } else {
